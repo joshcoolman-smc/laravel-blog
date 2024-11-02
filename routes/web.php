@@ -1,7 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AIController;
 
-Route::get('/{any}', function () {
+Route::get('/', function () {
     return view('welcome');
-})->where('any', '.*');
+});
+
+// AI Writer endpoint
+Route::post('/api/ai-generate', [AIController::class, 'generate']);
