@@ -21,14 +21,6 @@
                 </div>
             </div>
             <div class="p-8">
-                <h1
-                    class="text-3xl font-bold text-gray-800 dark:text-white mb-4"
-                >
-                    {{ content.title }}
-                </h1>
-                <p class="text-gray-600 dark:text-gray-300 text-lg mb-6">
-                    {{ content.description }}
-                </p>
                 <div class="prose dark:prose-invert max-w-none">
                     <div 
                         class="text-gray-700 dark:text-gray-200"

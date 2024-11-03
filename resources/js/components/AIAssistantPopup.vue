@@ -8,6 +8,41 @@
         rows="4"
         placeholder="Describe what you'd like the AI to write about..."
       ></textarea>
+      <div class="space-y-3 mb-4">
+        <div class="flex items-center">
+          <input
+            type="checkbox"
+            id="useCurrentText"
+            v-model="useCurrentText"
+            class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+          >
+          <label for="useCurrentText" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+            Use current text as a starting point
+          </label>
+        </div>
+        <div class="flex items-center">
+          <input
+            type="checkbox"
+            id="generateTitle"
+            v-model="generateTitle"
+            class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+          >
+          <label for="generateTitle" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+            Generate title
+          </label>
+        </div>
+        <div class="flex items-center">
+          <input
+            type="checkbox"
+            id="generateDescription"
+            v-model="generateDescription"
+            class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+          >
+          <label for="generateDescription" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+            Generate description
+          </label>
+        </div>
+      </div>
       <div class="flex justify-end space-x-3">
         <button
           @click="$emit('close')"
@@ -34,12 +69,19 @@ export default {
     show: {
       type: Boolean,
       required: true
+    },
+    currentText: {
+      type: String,
+      default: ''
     }
   },
   data() {
     return {
       prompt: '',
-      loading: false
+      loading: false,
+      useCurrentText: false,
+      generateTitle: false,
+      generateDescription: false
     }
   },
   methods: {
@@ -55,7 +97,10 @@ export default {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
           },
           body: JSON.stringify({
-            prompt: this.prompt
+            prompt: this.prompt,
+            currentText: this.useCurrentText ? this.currentText : null,
+            generateTitle: this.generateTitle,
+            generateDescription: this.generateDescription
           })
         });
 
@@ -68,9 +113,16 @@ export default {
         }
 
         const data = JSON.parse(responseData);
-        this.$emit('content-generated', data.content);
+        this.$emit('content-generated', {
+          content: data.content,
+          title: data.title,
+          description: data.description
+        });
         this.$emit('close');
         this.prompt = '';
+        this.useCurrentText = false;
+        this.generateTitle = false;
+        this.generateDescription = false;
       } catch (error) {
         console.error('Error generating content:', error);
       } finally {
