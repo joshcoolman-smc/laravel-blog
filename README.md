@@ -90,4 +90,67 @@ The schema includes:
 - Public storage bucket for content images
 - Storage policies for authenticated image uploads
 
+### AI Writer Feature (Optional)
 
+The blog includes an AI-powered content generation feature that leverages OpenAI's GPT model to assist in content creation. This feature demonstrates modern AI integration patterns and structured output handling.
+
+#### Technical Implementation
+
+1. Backend Architecture:
+   - Structured JSON output format for consistent content generation
+   - Title optimization (50-60 characters) with SEO considerations
+   - Meta description generation (150-160 characters) for better search results
+   - Content formatting with proper HTML structure
+   - System prompts designed for blog-specific content
+   - Error handling and logging for AI interactions
+
+2. Frontend Integration:
+   - Reactive Vue.js components with real-time updates
+   - Modular popup component for AI interaction
+   - Dark mode support for AI interface
+   - Progressive enhancement (UI only shows when feature is enabled)
+
+3. Content Generation Modes:
+   - New Content Generation: Creates complete articles from prompts
+   - Content Enhancement: Uses existing text as a foundation
+   - Metadata Generation: Optional title and description generation
+   - Length Control: Targets 3-5 minute read times (750-1250 words)
+
+#### Setup Instructions
+
+1. Enable the feature:
+   ```
+   # Update .env file
+   AI_WRITER=true
+   OPENAI_API_KEY=your-openai-api-key
+   ```
+
+2. Get an OpenAI API key:
+   - Sign up at https://platform.openai.com
+   - Create an API key in your account settings
+   - Copy the key to your .env file
+
+#### Usage Features
+
+1. Content Generation:
+   - Click the sparkles ✨ AI Assistant button in the editor toolbar
+   - Enter a topic or description
+   - Optionally check "Use current text" to enhance existing content
+   - Choose whether to generate title and description
+   - Get properly formatted HTML content optimized for blogs
+
+2. Smart Formatting:
+   - Automatically structures content with headings
+   - Creates proper paragraph breaks
+   - Includes lists where appropriate
+   - Maintains consistent HTML formatting
+   - Preserves existing content structure when enhancing
+
+3. Optimization Options:
+   - SEO-friendly title generation
+   - Compelling meta descriptions
+   - Consistent content length
+   - Natural language flow
+   - Proper HTML semantics
+
+The AI Writer feature demonstrates practical AI integration in a modern web application, showing how large language models can be effectively used to enhance content creation workflows while maintaining proper structure and formatting.

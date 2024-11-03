@@ -105,19 +105,31 @@
             </label>
             <div class="border border-gray-300 dark:border-gray-600 rounded-md overflow-hidden">
               <!-- Editor Menu Bar -->
-              <div class="border-b border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 p-2 flex flex-wrap gap-2">
+              <div class="border-b border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 p-2 flex flex-wrap gap-2 justify-between">
+                <div class="flex flex-wrap gap-2">
+                  <button
+                    v-for="item in menuItems"
+                    :key="item.action"
+                    @click.prevent="item.action"
+                    :class="[
+                      'px-2 py-1 rounded text-sm',
+                      editor?.isActive(item.name) 
+                        ? 'bg-indigo-600 text-white' 
+                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
+                    ]"
+                  >
+                    {{ item.label }}
+                  </button>
+                </div>
                 <button
-                  v-for="item in menuItems"
-                  :key="item.action"
-                  @click.prevent="item.action"
-                  :class="[
-                    'px-2 py-1 rounded text-sm',
-                    editor?.isActive(item.name) 
-                      ? 'bg-indigo-600 text-white' 
-                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
-                  ]"
+                  v-if="showAIButton"
+                  @click.prevent="showAIPopup = true"
+                  class="px-4 py-2 rounded-md text-base bg-purple-600 text-white hover:bg-purple-700 transition-colors flex items-center gap-2"
                 >
-                  {{ item.label }}
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                    <path d="M15.98 1.804a1 1 0 00-1.96 0l-.24 1.192a1 1 0 01-.784.785l-1.192.238a1 1 0 000 1.962l1.192.238a1 1 0 01.785.785l.238 1.192a1 1 0 001.962 0l.238-1.192a1 1 0 01.785-.785l1.192-.238a1 1 0 000-1.962l-1.192-.238a1 1 0 01-.785-.785l-.238-1.192zM6.949 5.684a1 1 0 00-1.898 0l-.683 2.051a1 1 0 01-.633.633l-2.051.683a1 1 0 000 1.898l2.051.684a1 1 0 01.633.632l.683 2.051a1 1 0 001.898 0l.683-2.051a1 1 0 01.633-.633l2.051-.683a1 1 0 000-1.898l-2.051-.683a1 1 0 01-.633-.633L6.95 5.684zM13.949 13.684a1 1 0 00-1.898 0l-.184.551a1 1 0 01-.632.633l-.551.183a1 1 0 000 1.898l.551.183a1 1 0 01.633.633l.183.551a1 1 0 001.898 0l.184-.551a1 1 0 01.632-.633l.551-.183a1 1 0 000-1.898l-.551-.184a1 1 0 01-.633-.632l-.183-.551z" />
+                  </svg>
+                  AI Assistant
                 </button>
               </div>
 
@@ -142,6 +154,14 @@
         </form>
       </div>
     </div>
+
+    <!-- AI Assistant Popup -->
+    <AIAssistantPopup
+      :show="showAIPopup"
+      :current-text="editor?.getHTML()"
+      @close="showAIPopup = false"
+      @content-generated="handleAIContent"
+    />
   </div>
 </template>
 
@@ -149,11 +169,13 @@
 import { Editor, EditorContent } from '@tiptap/vue-3';
 import StarterKit from '@tiptap/starter-kit';
 import ServiceProvider from '../services/ServiceProvider';
+import AIAssistantPopup from './AIAssistantPopup.vue';
 
 export default {
   name: 'EditContent',
   components: {
     EditorContent,
+    AIAssistantPopup,
   },
   props: {
     id: {
@@ -172,6 +194,7 @@ export default {
       },
       loading: false,
       uploadProgress: null,
+      showAIPopup: false,
       menuItems: [
         { label: 'Bold', name: 'bold', action: () => this.editor.chain().focus().toggleBold().run() },
         { label: 'Italic', name: 'italic', action: () => this.editor.chain().focus().toggleItalic().run() },
@@ -186,6 +209,9 @@ export default {
   computed: {
     isNew() {
       return !this.id;
+    },
+    showAIButton() {
+      return typeof window !== 'undefined' && window.aiWriterEnabled === true;
     }
   },
   async created() {
@@ -275,6 +301,18 @@ export default {
       this.content.image = null;
       if (this.$refs.fileInput) {
         this.$refs.fileInput.value = '';
+      }
+    },
+
+    handleAIContent(data) {
+      if (this.editor) {
+        this.editor.commands.setContent(data.content);
+      }
+      if (data.title) {
+        this.content.title = data.title;
+      }
+      if (data.description) {
+        this.content.description = data.description;
       }
     },
 

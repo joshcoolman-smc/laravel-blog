@@ -19,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Share AI Writer configuration with all views
+        view()->share('aiWriterEnabled', config('services.ai.enabled'));
     }
 }
